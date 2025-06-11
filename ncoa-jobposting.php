@@ -26,8 +26,8 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if (! defined('WPINC')) {
+   die;
 }
 
 /**
@@ -35,15 +35,15 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'NCOA_JOBPOSTING_VERSION', '1.0.0' );
+define('NCOA_JOBPOSTING_VERSION', '1.0.0');
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-ncoa-jobposting-activator.php
  */
 function activate_ncoa_jobposting() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-ncoa-jobposting-activator.php';
-	Ncoa_Jobposting_Activator::activate();
+   require_once plugin_dir_path(__FILE__) . 'includes/class-ncoa-jobposting-activator.php';
+   Ncoa_Jobposting_Activator::activate();
 }
 
 /**
@@ -51,18 +51,18 @@ function activate_ncoa_jobposting() {
  * This action is documented in includes/class-ncoa-jobposting-deactivator.php
  */
 function deactivate_ncoa_jobposting() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-ncoa-jobposting-deactivator.php';
-	Ncoa_Jobposting_Deactivator::deactivate();
+   require_once plugin_dir_path(__FILE__) . 'includes/class-ncoa-jobposting-deactivator.php';
+   Ncoa_Jobposting_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_ncoa_jobposting' );
-register_deactivation_hook( __FILE__, 'deactivate_ncoa_jobposting' );
+register_activation_hook(__FILE__, 'activate_ncoa_jobposting');
+register_deactivation_hook(__FILE__, 'deactivate_ncoa_jobposting');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-ncoa-jobposting.php';
+require plugin_dir_path(__FILE__) . 'includes/class-ncoa-jobposting.php';
 
 /**
  * Begins execution of the plugin.
@@ -75,8 +75,8 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-ncoa-jobposting.php';
  */
 function run_ncoa_jobposting() {
 
-	$plugin = new Ncoa_Jobposting();
-	$plugin->run();
+   $plugin = new Ncoa_Jobposting();
+   $plugin->run();
 
    add_shortcode('joblist', 'ncoa_joblist');
 
@@ -84,5 +84,31 @@ function run_ncoa_jobposting() {
       return 'List';
    }
 
+   // Check for plugin updates
+   add_action('init', 'github_plugin_updater_ncoa_jobposting');
+   function github_plugin_updater_ncoa_jobposting() {
+      require_once plugin_dir_path(__FILE__) . 'includes/class-ncoa-jobposting-updater.php';
+
+      if (! defined('WP_GITHUB_FORCE_UPDATE')) {
+         define('WP_GITHUB_FORCE_UPDATE', true);
+      }
+
+      if (is_admin()) {
+         $config = array(
+            'slug' => plugin_basename(__FILE__), // this is the slug of your plugin
+            'proper_folder_name' => 'ncoa-jobposting', // this is the name of the folder your plugin lives in
+            'api_url' => 'https://api.github.com/repos/rohangardiner/ncoa-jobposting', // the GitHub API url of your GitHub repo
+            'raw_url' => 'https://raw.github.com/rohangardiner/ncoa-jobposting/main', // the GitHub raw url of your GitHub repo
+            'github_url' => 'https://github.com/rohangardiner/ncoa-jobposting', // the GitHub url of your GitHub repo
+            'zip_url' => 'https://github.com/rohangardiner/ncoa-jobposting/zipball/main', // the zip url of the GitHub repo
+            'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
+            'requires' => '4.3', // which version of WordPress does your plugin require?
+            'tested' => '6.8.1', // which version of WordPress is your plugin tested up to?
+            'readme' => 'README.md', // which file to use as the readme for the version number
+            'access_token' => '', // Access private repositories by authorizing under Plugins > GitHub Updates when this example plugin is installed
+         );
+         new WP_GitHub_Updater_Ncoa_Jobposting($config);
+      }
+   }
 }
 run_ncoa_jobposting();
