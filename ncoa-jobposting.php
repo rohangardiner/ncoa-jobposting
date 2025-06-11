@@ -78,5 +78,11 @@ function run_ncoa_jobposting() {
 	$plugin = new Ncoa_Jobposting();
 	$plugin->run();
 
+   add_shortcode('joblist', 'ncoa_joblist');
+
+   function ncoa_joblist() {
+      return 'List';
+   }
+
 }
 run_ncoa_jobposting();
