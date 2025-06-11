@@ -2,7 +2,7 @@
 REM This script uses 7-Zip to create a zip archive.
 REM Ensure 7-Zip is installed and 7z.exe is in your PATH, or set the correct path below.
 
-REM Set the path to 7z.exe if it's not in your PATH.  If it is in your PATH, this line is not needed.
+REM Set the path to 7z.exe if it's not in your PATH. If it is in your PATH, this line is not needed.
 set "SEVENZIP_PATH=C:\Program Files\7-Zip\7z.exe"
 
 REM Set the name of the zip file you want to create.
@@ -20,16 +20,22 @@ if not exist "%SEVENZIP_PATH%" (
     exit /b 1
 )
 
-REM Create the output directory if it does not exist
-if not exist "%OUTPUT_FOLDER%" (
-    echo Creating directory %OUTPUT_FOLDER%
-    mkdir "%OUTPUT_FOLDER%"
-    if %errorlevel% neq 0 (
-        echo Failed to create directory %OUTPUT_FOLDER%
-        pause
-        exit /b 1
-    )
+REM --- NEW: Clean and recreate the output folder ---
+REM If the output folder already exists, remove it and all its contents quietly.
+if exist "%OUTPUT_FOLDER%" (
+    echo Deleting contents of %OUTPUT_FOLDER%...
+    rmdir /s /q "%OUTPUT_FOLDER%"
 )
+
+REM Create the output directory.
+echo Creating directory %OUTPUT_FOLDER%...
+mkdir "%OUTPUT_FOLDER%"
+if %errorlevel% neq 0 (
+    echo Failed to create directory %OUTPUT_FOLDER%
+    pause
+    exit /b 1
+)
+REM --- End of new section ---
 
 echo Adding files and folders to %ZIP_FILENAME% in %OUTPUT_FOLDER%...
 echo Files and folders being added: %FILES_TO_ADD%
