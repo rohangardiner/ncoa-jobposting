@@ -10,7 +10,7 @@ set "ZIP_FILENAME=ncoa-jobposting.zip"
 set "OUTPUT_FOLDER=release"
 
 REM Set the files and folders to include in the zip file.
-set "FILES_TO_ADD=index.php uninstall.php ncoa-jobposting.php README.md LICENSE.txt admin includes languages public"
+set "FILES_TO_ADD=index.php uninstall.php ncoa-jobposting.php README.txt LICENSE.txt admin includes languages public"
 
 REM Check if 7z.exe exists
 if not exist "%SEVENZIP_PATH%" (

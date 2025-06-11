@@ -52,6 +52,9 @@ class Ncoa_Jobposting_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
+      // Add Admin menu item with link to plugin settings
+      add_action('admin_menu', array($this, 'add_admin_menu'));
+
 	}
 
 	/**
@@ -100,4 +103,45 @@ class Ncoa_Jobposting_Admin {
 
 	}
 
+   public function add_admin_menu() {
+    add_menu_page(
+        'Job Postings',
+        'Job Postings',
+        'manage_options',
+        'ncoa-jobposting-list',
+        array($this, 'display_jobposting_table'),
+        'dashicons-list-view',
+        26
+    );
 }
+
+public function display_jobposting_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'ncoa_jobposting';
+    $results = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+
+    echo '<div class="wrap"><h1>Job Postings</h1>';
+    if ($results) {
+        echo '<table class="widefat fixed striped">';
+        echo '<thead><tr>';
+        foreach (array_keys($results[0]) as $col) {
+            echo '<th>' . esc_html($col) . '</th>';
+        }
+        echo '</tr></thead><tbody>';
+        foreach ($results as $row) {
+            echo '<tr>';
+            foreach ($row as $cell) {
+                echo '<td>' . esc_html($cell) . '</td>';
+            }
+            echo '</tr>';
+        }
+        echo '</tbody></table>';
+    } else {
+        echo '<p>No job postings found.</p>';
+    }
+    echo '</div>';
+}
+
+}
+
+

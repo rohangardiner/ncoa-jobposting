@@ -9,7 +9,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Scrape job ads and show a customisable list to users
 
-~Current Version:1.0.1~
+~Current Version:1.0.2~
 
 == Changelog ==
 
