@@ -117,9 +117,13 @@ class Ncoa_Jobposting_Admin {
       // Handle actions
       if (isset($_GET['ncoa_action'], $_GET['job_id']) && current_user_can('manage_options')) {
          $job_id = intval($_GET['job_id']);
-         if ($_GET['ncoa_action'] === 'archive') {
-            $wpdb->update($table_name, array('is_active' => 0), array('id' => $job_id));
-            echo '<div class="notice notice-success is-dismissible"><p>Job archived.</p></div>';
+         if ($_GET['ncoa_action'] === 'toggle_active') {
+            // Get current is_active value
+            $current = $wpdb->get_var($wpdb->prepare("SELECT is_active FROM $table_name WHERE id = %d", $job_id));
+            $new_value = ($current == 1) ? 0 : 1;
+            $wpdb->update($table_name, array('is_active' => $new_value), array('id' => $job_id));
+            $msg = $new_value ? 'Job unarchived.' : 'Job archived.';
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($msg) . '</p></div>';
          } elseif ($_GET['ncoa_action'] === 'delete') {
             $wpdb->delete($table_name, array('id' => $job_id));
             echo '<div class="notice notice-success is-dismissible"><p>Job deleted.</p></div>';
@@ -132,30 +136,57 @@ class Ncoa_Jobposting_Admin {
       if ($results) {
          echo '<table class="widefat fixed striped">';
          echo '<thead><tr>';
-         foreach (array_keys($results[0]) as $col) {
-            echo '<th>' . esc_html($col) . '</th>';
-         }
+
+         // Table header
+         echo '
+            <th>Title</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Salary</th>
+            <th>Description</th>
+            <th>Link</th>
+            <th>Active</th>
+            <th>Date</th>
+         ';
+         // foreach (array_keys($results[0]) as $col) {
+         //    echo '<th>' . esc_html($col) . '</th>';
+         // }
          echo '<th>Actions</th>';
          echo '</tr></thead><tbody>';
          foreach ($results as $row) {
             echo '<tr>';
-            foreach ($row as $cell) {
-               echo '<td>' . esc_html($cell) . '</td>';
-            }
+            
+            // Table data row
+            echo '
+               <td>' . esc_html($row['title']) . '</td>
+               <td>' . esc_html($row['company']) . '</td>
+               <td>' . esc_html($row['location']) . '</td>
+               <td>' . esc_html($row['salary']) . '</td>
+               <td>' . esc_html($row['description']) . '</td>
+               <td>' . esc_html($row['link']) . '</td>
+               <td>' . esc_html($row['is_active']) . '</td>
+               <td>' . esc_html($row['post_date']) . '</td>
+            '; 
+            // foreach ($row as $cell) {
+            //    echo '<td>' . esc_html($cell) . '</td>';
+            // }
             // Action buttons
-            $archive_url = add_query_arg(array(
+            $toggle_url = add_query_arg(array(
                'page' => 'ncoa-jobposting-list',
-               'ncoa_action' => 'archive',
+               'ncoa_action' => 'toggle_active',
                'job_id' => $row['id']
             ), admin_url('options-general.php'));
+            $toggle_label = ($row['is_active']) ? 'Archive' : 'Restore';
+
             $delete_url = add_query_arg(array(
                'page' => 'ncoa-jobposting-list',
                'ncoa_action' => 'delete',
                'job_id' => $row['id']
             ), admin_url('options-general.php'));
+
             echo '<td>
-                <a href="' . esc_url($archive_url) . '" class="button">Archive</a>
-                <a href="' . esc_url($delete_url) . '" class="button" onclick="return confirm(\'Are you sure you want to delete this job posting?\')">Delete</a>
+               <a href="' . esc_url($toggle_url) . '" class="button">' . esc_html($toggle_label) . '</a>
+               <a href="' . esc_url($delete_url) . '" class="button" onclick="return confirm(\'Are you sure you want to delete this job posting?\')">Delete</a>
             </td>';
             echo '</tr>';
          }
