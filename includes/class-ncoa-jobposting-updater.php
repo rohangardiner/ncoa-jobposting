@@ -174,7 +174,7 @@ class WP_GitHub_Updater_Ncoa_Jobposting {
 			$this->config['homepage'] = $plugin_data['PluginURI'];
 
 		if ( ! isset( $this->config['readme'] ) )
-			$this->config['readme'] = 'README.md';
+			$this->config['readme'] = 'README.txt';
 
 	}
 
