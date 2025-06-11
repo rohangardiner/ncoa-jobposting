@@ -16,7 +16,7 @@
  * Plugin Name:       NCOA Jobposting
  * Plugin URI:        https://ncoa.com.au
  * Description:       Scrape job ads and show a customisable list to users
- * Version:           1.0.2
+ * Version:           1.0.3
  * Author:            Rohan
  * Author URI:        https://ncoa.com.au/
  * License:           GPL-2.0+
