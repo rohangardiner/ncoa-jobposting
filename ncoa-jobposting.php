@@ -16,7 +16,7 @@
  * Plugin Name:       NCOA Jobposting
  * Plugin URI:        https://ncoa.com.au
  * Description:       Scrape job ads and show a customisable list to users
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Rohan
  * Author URI:        https://ncoa.com.au/
  * License:           GPL-2.0+
@@ -73,13 +73,45 @@ require plugin_dir_path(__FILE__) . 'includes/class-ncoa-jobposting.php';
  *
  * @since    1.0.0
  */
+
+function ncoa_jobposting_db_table() {
+   global $wpdb;
+   $table_name = $wpdb->prefix . 'ncoa_jobposting';
+   $charset_collate = $wpdb->get_charset_collate();
+
+   // Create table structure
+   $sql = "CREATE TABLE $table_name (
+        id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        title VARCHAR(255) NOT NULL,
+        company VARCHAR(255) NOT NULL,
+        location VARCHAR(255) NOT NULL,
+        salary VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        link TEXT NOT NULL,
+        is_active BOOLEAN DEFAULT 1 NOT NULL,
+        post_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
+   // We need to include the 'upgrade.php' file from the WordPress admin includes,
+   // as this file contains the dbDelta() function we need to create/update the table.
+   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+   // Execute the SQL query using dbDelta to compare $sql table structure with the existing one and make changes.
+   // This is safer than running a direct CREATE TABLE query, as it won't cause errors if the table already exists.
+   dbDelta($sql);
+}
+
 function run_ncoa_jobposting() {
 
    $plugin = new Ncoa_Jobposting();
    $plugin->run();
 
-   add_shortcode('joblist', 'ncoa_joblist');
+   // Check for / Create db table to hold jobpostings
+   add_action('after_setup_theme', 'ncoa_jobposting_db_table');
 
+   // Displaying a job list
+   add_shortcode('joblist', 'ncoa_joblist');
    function ncoa_joblist() {
       return 'List';
    }
@@ -104,7 +136,7 @@ function run_ncoa_jobposting() {
             'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
             'requires' => '4.3', // which version of WordPress does your plugin require?
             'tested' => '6.8.1', // which version of WordPress is your plugin tested up to?
-            'readme' => 'README.md', // which file to use as the readme for the version number
+            'readme' => 'README.txt', // which file to use as the readme for the version number
             'access_token' => '', // Access private repositories by authorizing under Plugins > GitHub Updates when this example plugin is installed
          );
          new WP_GitHub_Updater_Ncoa_Jobposting($config);
