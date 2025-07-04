@@ -114,6 +114,35 @@ class Ncoa_Jobposting_Admin {
       global $wpdb;
       $table_name = $wpdb->prefix . 'ncoa_jobposting';
 
+      // Handle new job posting form submission
+      if (
+         isset($_POST['ncoa_add_job_nonce']) &&
+         wp_verify_nonce($_POST['ncoa_add_job_nonce'], 'ncoa_add_job') &&
+         current_user_can('manage_options')
+      ) {
+         $title = sanitize_text_field($_POST['title']);
+         $company = sanitize_text_field($_POST['company']);
+         $location = sanitize_text_field($_POST['location']);
+         $salary = sanitize_text_field($_POST['salary']);
+         $description = sanitize_textarea_field($_POST['description']);
+         $link = esc_url_raw($_POST['link']);
+         $is_active = isset($_POST['is_active']) ? 1 : 0;
+         $post_date = current_time('mysql');
+
+         $wpdb->insert($table_name, array(
+            'title' => $title,
+            'company' => $company,
+            'location' => $location,
+            'salary' => $salary,
+            'description' => $description,
+            'link' => $link,
+            'is_active' => $is_active,
+            'post_date' => $post_date,
+         ));
+
+         echo '<div class="notice notice-success is-dismissible"><p>New job posting added.</p></div>';
+      }
+
       // Handle actions
       if (isset($_GET['ncoa_action'], $_GET['job_id']) && current_user_can('manage_options')) {
          $job_id = intval($_GET['job_id']);
@@ -152,7 +181,7 @@ class Ncoa_Jobposting_Admin {
          echo '</tr></thead><tbody>';
          foreach ($results as $row) {
             echo '<tr>';
-            
+
             // Table data row
             echo '
                <td>' . esc_html($row['title']) . '</td>
@@ -163,7 +192,7 @@ class Ncoa_Jobposting_Admin {
                <td>' . esc_html($row['link']) . '</td>
                <td>' . esc_html($row['is_active']) . '</td>
                <td>' . esc_html($row['post_date']) . '</td>
-            '; 
+            ';
 
             // Action buttons
             $toggle_url = add_query_arg(array(
@@ -190,5 +219,44 @@ class Ncoa_Jobposting_Admin {
          echo '<p>No job postings found.</p>';
       }
       echo '</div>';
+
+      // Add Job Posting Form
+?>
+      <h2>Add New Job Posting</h2>
+      <form method="post">
+         <?php wp_nonce_field('ncoa_add_job', 'ncoa_add_job_nonce'); ?>
+         <table class="form-table">
+            <tr>
+               <th><label for="title">Title</label></th>
+               <td><input name="title" type="text" id="title" class="regular-text" required></td>
+            </tr>
+            <tr>
+               <th><label for="company">Company</label></th>
+               <td><input name="company" type="text" id="company" class="regular-text" required></td>
+            </tr>
+            <tr>
+               <th><label for="location">Location</label></th>
+               <td><input name="location" type="text" id="location" class="regular-text"></td>
+            </tr>
+            <tr>
+               <th><label for="salary">Salary</label></th>
+               <td><input name="salary" type="text" id="salary" class="regular-text"></td>
+            </tr>
+            <tr>
+               <th><label for="description">Description</label></th>
+               <td><textarea name="description" id="description" class="large-text" rows="4"></textarea></td>
+            </tr>
+            <tr>
+               <th><label for="link">Link</label></th>
+               <td><input name="link" type="url" id="link" class="regular-text"></td>
+            </tr>
+            <tr>
+               <th><label for="is_active">Active</label></th>
+               <td><input name="is_active" type="checkbox" id="is_active" value="1" checked> Yes</td>
+            </tr>
+         </table>
+         <p><input type="submit" class="button button-primary" value="Add Job Posting"></p>
+      </form>
+<?php
    }
 }
