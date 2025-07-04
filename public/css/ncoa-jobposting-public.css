@@ -2,3 +2,37 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+
+.jobposting-container {
+   padding: 20px;
+}
+
+.jobposting-featured {
+   display: flex;
+   flex-direction: row;
+   gap: 20px;
+}
+
+.jobposting-featureditem {
+   padding: 20px;
+   border: 1px solid #ccc;
+   border-radius: 12px;
+}
+
+.jobposting-filters {
+   display: flex;
+   flex-direction: row;
+   gap: 5px;
+}
+
+.jobposting-list {
+   display: flex;
+   flex-direction: column;
+   gap: 5px;
+}
+
+.jobposting-listitem {
+   padding: 10px;
+   border: 1px solid #ccc;
+   border-radius: 6px;
+}

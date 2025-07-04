@@ -16,7 +16,7 @@
  * Plugin Name:       NCOA Jobposting
  * Plugin URI:        https://ncoa.com.au
  * Description:       Scrape job ads and show a customisable list to users
- * Version:           1.0.4
+ * Version:           1.0.5
  * Author:            Rohan
  * Author URI:        https://ncoa.com.au/
  * License:           GPL-2.0+
@@ -82,7 +82,53 @@ function run_ncoa_jobposting() {
    // Displaying a job list
    add_shortcode('joblist', 'ncoa_joblist');
    function ncoa_joblist() {
-      return 'List';
+      $joblistHTML = '';
+
+      $joblistHTML .= '
+         <div class="jobposting-container">
+            <h1>Browse</h1>
+            <div class="jobposting-featured">
+               <div class="jobposting-featureditem">
+                  <h3 class="featureditem-title">Another One</h3>
+                  <span class="featureditem-company">Competing Company</span> <span class="featureditem-location">Brisbane, QLD</span>
+                  <span class="featureditem-salary">$50,000</span>
+                  <p class="featureditem-description">Do more with Some Company! Lorem ipsum dolor sit amet. Something else, heres a link: Click here for more info!	</p>
+               </div>
+               <div class="jobposting-featureditem">
+                  <h3 class="featureditem-title">Another One</h3>
+                  <span class="featureditem-company">Competing Company</span> <span class="featureditem-location">Brisbane, QLD</span>
+                  <span class="featureditem-salary">$50,000</span>
+                  <p class="featureditem-description">Do more with Some Company! Lorem ipsum dolor sit amet. Something else, heres a link: Click here for more info!	</p>
+               </div>
+               <div class="jobposting-featureditem">
+                  <h3 class="featureditem-title">Another One</h3>
+                  <span class="featureditem-company">Competing Company</span> <span class="featureditem-location">Brisbane, QLD</span>
+                  <span class="featureditem-salary">$50,000</span>
+                  <p class="featureditem-description">Do more with Some Company! Lorem ipsum dolor sit amet. Something else, heres a link: Click here for more info!	</p>
+               </div>
+            </div>
+            <div class="jobposting-filters">
+               <input type="text" /> <select><option>Something</option><option>Else</option></select>
+            </div>
+            <div class="jobposting-list">
+               <div class="jobposting-listitem">List Item - Details - Salary</div>
+               <div class="jobposting-listitem">List Item - Details - Salary</div>
+               <div class="jobposting-listitem">List Item - Details - Salary</div>
+               <div class="jobposting-listitem">List Item - Details - Salary</div>
+               <div class="jobposting-listitem">List Item - Details - Salary</div>
+            </div>
+         </div>
+      ';
+
+      return $joblistHTML;
+   }
+
+   // Add Settings link to plugin listing
+   add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'ncoa_jobposting_settings_link');
+   function ncoa_jobposting_settings_link($links) {
+      $settings_link = '<a href="' . esc_url(admin_url('options-general.php?page=ncoa-jobposting-list')) . '">Settings</a>';
+      array_unshift($links, $settings_link);
+      return $links;
    }
 
    // Check for plugin updates

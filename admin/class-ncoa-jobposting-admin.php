@@ -122,7 +122,7 @@ class Ncoa_Jobposting_Admin {
             $current = $wpdb->get_var($wpdb->prepare("SELECT is_active FROM $table_name WHERE id = %d", $job_id));
             $new_value = ($current == 1) ? 0 : 1;
             $wpdb->update($table_name, array('is_active' => $new_value), array('id' => $job_id));
-            $msg = $new_value ? 'Job unarchived.' : 'Job archived.';
+            $msg = $new_value ? 'Job restored.' : 'Job archived.';
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($msg) . '</p></div>';
          } elseif ($_GET['ncoa_action'] === 'delete') {
             $wpdb->delete($table_name, array('id' => $job_id));
@@ -148,9 +148,6 @@ class Ncoa_Jobposting_Admin {
             <th>Active</th>
             <th>Date</th>
          ';
-         // foreach (array_keys($results[0]) as $col) {
-         //    echo '<th>' . esc_html($col) . '</th>';
-         // }
          echo '<th>Actions</th>';
          echo '</tr></thead><tbody>';
          foreach ($results as $row) {
@@ -162,14 +159,12 @@ class Ncoa_Jobposting_Admin {
                <td>' . esc_html($row['company']) . '</td>
                <td>' . esc_html($row['location']) . '</td>
                <td>' . esc_html($row['salary']) . '</td>
-               <td>' . esc_html($row['description']) . '</td>
+               <td>' . esc_html(wp_trim_words($row['description'], 50, '...')) . '</td>
                <td>' . esc_html($row['link']) . '</td>
                <td>' . esc_html($row['is_active']) . '</td>
                <td>' . esc_html($row['post_date']) . '</td>
             '; 
-            // foreach ($row as $cell) {
-            //    echo '<td>' . esc_html($cell) . '</td>';
-            // }
+
             // Action buttons
             $toggle_url = add_query_arg(array(
                'page' => 'ncoa-jobposting-list',
